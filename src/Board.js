@@ -62,14 +62,14 @@
     },
 
 
-/*
-         _             _     _
-     ___| |_ __ _ _ __| |_  | |__   ___ _ __ ___ _
-    / __| __/ _` | '__| __| | '_ \ / _ \ '__/ _ (_)
-    \__ \ || (_| | |  | |_  | | | |  __/ | |  __/_
-    |___/\__\__,_|_|   \__| |_| |_|\___|_|  \___(_)
+    /*
+          _             _     _
+      ___| |_ __ _ _ __| |_  | |__   ___ _ __ ___ _
+      / __| __/ _` | '__| __| | '_ \ / _ \ '__/ _ (_)
+      \__ \ || (_| | |  | |_  | | | |  __/ | |  __/_
+      |___/\__\__,_|_|   \__| |_| |_|\___|_|  \___(_)
 
- */
+    */
     /*=========================================================================
     =                 TODO: fill in these Helper Functions                    =
     =========================================================================*/
@@ -79,12 +79,36 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      var matrix = this.rows();
+      var counter = 0;
+
+      for (var i = 0; i < matrix[rowIndex].length; i++) {
+        var val = matrix[rowIndex][i];
+
+        if (val === 1) {
+          counter++;
+        }
+      }
+
+      return counter > 1;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      var matrix = this.rows();
+
+      var hasConflict = false;
+
+
+      for (var i = 0; i < matrix.length; i++) {
+        hasConflict = this.hasRowConflictAt(i);
+
+        if (hasConflict) {
+          return true;
+        }
+      }
+
+      return hasConflict;
     },
 
 
@@ -94,12 +118,21 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      // var matrix = this.rows();
+
+      // for ()
+      return false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      var matrix = this.rows();
+
+      for (var i = 0; i < matrix.length; i++) {
+
+      }
+
+      return false;
     },
 
 
