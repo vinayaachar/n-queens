@@ -118,21 +118,36 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      // var matrix = this.rows();
+      var matrix = this.rows();
 
-      // for ()
-      return false;
+      var counter = 0;
+
+      for (var i = 0; i < matrix.length; i++) {
+        var val = matrix[i][colIndex];
+
+        if (val === 1) {
+          counter++;
+        }
+      }
+
+      return counter > 1;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
       var matrix = this.rows();
 
-      for (var i = 0; i < matrix.length; i++) {
+      var hasConflicts = false;
 
+      for (var i = 0; i < matrix.length; i++) {
+        hasConflict = this.hasColConflictAt(i);
+
+        if (hasConflict) {
+          return true;
+        }
       }
 
-      return false;
+      return hasConflict;
     },
 
 
