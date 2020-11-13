@@ -54,21 +54,98 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined;
+  if (n === 1) {
+    return 1;
+  }
 
-  var getFactorial = function(n) {
-    if (n === 0) {
-      return 1;
-    } else {
-      return n * getFactorial(n - 1);
+  var solutionCount = 0;
+
+  var createMatrix = function (n) {
+    var newMatrix = new Array(n);
+
+    // build matrix
+    for (var i = 0; i < n; i++) {
+      newMatrix[i] = new Array(n);
+    }
+
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j < n; j++) {
+        newMatrix[i][j] = 0;
+      }
+    }
+
+    return newMatrix;
+  };
+
+  var newMatrix = createMatrix(n);
+
+  // loop for n --> every position on the board
+  for (var i = 0; i < newMatrix.length; i++) {
+    var row = newMatrix[i];
+
+    for (var j = 0; j < row.length; j++) {
+      // pick a spot
+      newMatrix[i][j] = 1;
+
+      collision(i, j);
+
+      var hasEmpty = true;
+
+      while (hasEmpty) {
+        //call empty position checker
+        if (emptyPositionChecker(newMatrix)) {
+          continue;
+        } else {
+          //else we found a complete matrix, break
+          hasEmpty = false;
+          solutionCount++;
+          newMatrix = createMatrix(n);
+          break;
+        }
+      }
+
+    }
+  }
+
+  var collision = function (i, j) {
+    var col = i;
+    var row = j;
+
+    while (col < n) {
+      // set the row (i) to all 'a'
+      col++;
+      if (col < n) {
+        newMatrix[col][j] = 'x';
+        col++;
+      }
+    }
+
+    while (row < n) {
+      // set columns (j) to all 'a'
+      row++;
+      if (row < n) {
+        newMatrix[i][row] = 'x';
+        row++;
+      }
     }
   };
 
-  solutionCount = getFactorial(n);
-  console.log(solutionCount);
+  var emptyPositionChecker = function (matrix) {
+    for (var i = 0; i < matrix.length; i++) {
+      for (var j = 0; j < matrix.length; j++) {
+        if (matrix[i][j] === 0) {
+          matrix[i][j] = 1;
+          collision(i, j);
+          return true;
+        }
+      }
+    }
 
+    return false;
+  };
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+
   return solutionCount;
 };
 
