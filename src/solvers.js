@@ -43,161 +43,62 @@ window.findNRooksSolution = function(n) {
     }
   }
 
-
-
-  // console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  // console.group('nRook matrix:');
-  // console.log(solution)
-  // console.groupEnd();
   return solution;
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  if (n === 1) {
-    return 1;
-  }
-
-  if (n === 2) {
-    return 2;
-  }
-
-
   var solutionCount = 0;
 
-  var factorial = function (m) {
-    if (m === 0) {
-      return 1;
-    } else {
-      return m * factorial(m-1);
-    }
-  }
+  var getBoard = function (n) {
+    var matrix = new Array(n);
 
-  var num = factorial(n)
-
-  var diffCalculator = function () {
-  	if(solutionCount > num) {
-      var diff = solutionCount - num;
-      solutionCount = solutionCount - diff;
-    }
-
-	if(solutionCount < num) {
-    var diff = num - solutionCount ;
-    solutionCount = solutionCount + diff;
-  }
- }
-
-  var createMatrix = function (n) {
-    var newMatrix = new Array(n);
-
-    // build matrix
-    for (var i = 0; i < n; i++) {
-      newMatrix[i] = new Array(n);
-    }
-
-    for (var i = 0; i < n; i++) {
-      for (var j = 0; j < n; j++) {
-        newMatrix[i][j] = 0;
-      }
-    }
-
-    return newMatrix;
-  };
-
-  var newMatrix = createMatrix(n);
-
-  // based on rook position, greying out function
-  var collision = function (i, j) {
-    var col = i;
-    var row = j;
-
-    while (col < n) {
-      // set the row (i) to all 'a'
-      col++;
-      if (col < n) {
-        if (newMatrix[col][j] !== 1) {
-          newMatrix[col][j] = 'x';
-        }
-      }
-    }
-
-    while (row < n) {
-      // set columns (j) to all 'a'
-      row++;
-      if (row < n) {
-        if (newMatrix[i][row] !== 1) {
-          newMatrix[i][row] = 'x';
-        }
-      }
-    }
-
-    if (i > 0) {
-      col = i;
-      while (col !== 0) {
-        col--;
-        if (newMatrix[col][j] !== 1) {
-          newMatrix[col][j] = 'x';
-        }
-      }
-    }
-    if (j > 0) {
-      row = j;
-      while (row !== 0) {
-        row--;
-        if (newMatrix[i][row] !== 1) {
-          newMatrix[i][row] = 'x';
-        }
-      }
-    }
-  };
-
-  // checks position with 0 and sets it with Rook
-  var emptyPositionChecker = function (matrix) {
     for (var i = 0; i < matrix.length; i++) {
+      matrix[i] = new Array(n);
       for (var j = 0; j < matrix.length; j++) {
-        if (matrix[i][j] === 0) {
-          matrix[i][j] = 1;
-          collision(i, j);
-          return true;
-        }
+        matrix[i][j] = 0;
       }
     }
 
-    return false;
+    return matrix;
   };
 
-
-// loop for every position on the board
-  for (var i = 0; i < newMatrix.length; i++) {
-    var row = newMatrix[i];
-
-    for (var j = 0; j < newMatrix.length; j++) {
-      // pick a position for rook
-      newMatrix[i][j] = 1;
-
-      // grey out collison zones due to the above position
-      collision(i, j);
-
-      var hasEmpty = true;
-
-      while (hasEmpty) {
-        //call empty position checker
-        if (emptyPositionChecker(newMatrix)) {
-          continue;
-        } else {
-          //else we found a complete matrix, break
-          hasEmpty = false;
-          solutionCount++;
-          // reinitiaze new array to start all over
-          newMatrix = createMatrix(n);
-        }
+  var canPlace = function (matrix, index, startingPoint) {
+    // check horizontal for collisions
+    for (var i = 0; i < startingPoint; i++) {
+      if (matrix[index][i] === 1) {
+        return false;
       }
-
     }
-  }
 
-  diffCalculator();
+    // valid!
+    return true;
+  };
 
+  var doWork = function (matrix, startingPoint) {
+    if (startingPoint === n) {
+      solutionCount++;
+      return;
+    }
+
+    for (var i = 0; i < n; i++) {
+      if (canPlace(matrix, i, startingPoint)) {
+        matrix[i][startingPoint] = 1;
+
+        doWork(matrix, startingPoint + 1);
+
+        matrix[i][startingPoint] = 0;
+      }
+    }
+  };
+
+  var getSolution = function () {
+    var matrix = getBoard(n);
+
+    doWork(matrix, 0);
+  };
+
+  getSolution();
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
 
@@ -215,7 +116,7 @@ window.findNQueensSolution = function(n) {
 
   for (var i = 0; i < n; i++) {
     for (var j = 0; j < n; j++) {
-      solution[i][j] = 0
+      solution[i][j] = 0;
     }
   }
 
@@ -226,24 +127,26 @@ window.findNQueensSolution = function(n) {
 
   if ((n % 6 === 2) || (n % 6 === 3)) {
     for (var i = 0; i < n/2; i++) {
-      if (Math.floor(n/2)-i*2 < n) {
-        solution[i][(n + Math.floor(n/2)-i*2) % n] = true;
+      if (Math.floor(n / 2) - i * 2 < n) {
+        solution[i][(n + Math.floor(n / 2) - i * 2) % n] = true;
       }
-      if ((n-i) >= 0) {
-      solution[n-i-1][(n+ Math.floor(n/2)-1+i*2) % n] = true;
+      if ((n - i) >= 0) {
+        solution[n - i -1][(n+ Math.floor(n / 2) - 1 + i * 2) % n] = true;
       }
     }
+
     console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+
     return solution;
   }
 
 
-  for (var i = 0; i < n/2; i++) {
-    if ((i+1)*2-1 < n) {
-      solution[i][((i+1)*2)-1] = true;
+  for (var i = 0; i < n / 2; i++) {
+    if ((i + 1) * 2 - 1 < n) {
+      solution[i][((i + 1) * 2) - 1] = true;
     }
-    if (i*2 < n){
-      solution[i+Math.floor(n/2)][i*2] = true;
+    if (i * 2 < n){
+      solution[i + Math.floor(n / 2)][i * 2] = true;
     }
   }
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
@@ -252,7 +155,73 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+
+  var getBoard = function (n) {
+    var matrix = new Array(n);
+
+    for (var i = 0; i < matrix.length; i++) {
+      matrix[i] = new Array(n);
+      for (var j = 0; j < matrix.length; j++) {
+        matrix[i][j] = 0;
+      }
+    }
+
+    return matrix;
+  };
+
+  var canPlace = function (matrix, index, startingPoint) {
+    // check horizontal for collisions
+    for (var i = 0; i < startingPoint; i++) {
+      if (matrix[index][i] === 1) {
+        return false;
+      }
+    }
+
+    // check major diagonal for collisions
+    for (var i = index, j = startingPoint; i >= 0 && j >= 0; i--, j--) {
+      if (matrix[i][j] === 1) {
+        return false;
+      }
+    }
+
+    // check minor diagonal for collisions
+    for (var i = index, j = startingPoint; i < n && j >= 0; i++, j--) {
+      if (matrix[i][j] === 1) {
+        return false;
+      }
+    }
+
+    // valid!
+    return true;
+  };
+
+  var doWork = function (matrix, startingPoint) {
+    if (startingPoint === n) {
+      solutionCount++;
+      return;
+    }
+
+    for (var i = 0; i < n; i++) {
+      if (canPlace(matrix, i, startingPoint)) {
+        matrix[i][startingPoint] = 1;
+
+        doWork(matrix, startingPoint + 1);
+
+        matrix[i][startingPoint] = 0;
+      }
+    }
+  };
+
+  var getSolution = function () {
+    var matrix = getBoard(n);
+
+    doWork(matrix, 0);
+  };
+
+  getSolution();
+
+
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
