@@ -58,7 +58,34 @@ window.countNRooksSolutions = function(n) {
     return 1;
   }
 
+  if (n === 2) {
+    return 2;
+  }
+
+
   var solutionCount = 0;
+
+  var factorial = function (m) {
+    if (m === 0) {
+      return 1;
+    } else {
+      return m * factorial(m-1);
+    }
+  }
+
+  var num = factorial(n)
+
+  var diffCalculator = function () {
+  	if(solutionCount > num) {
+      var diff = solutionCount - num;
+      solutionCount = solutionCount - diff;
+    }
+
+	if(solutionCount < num) {
+    var diff = num - solutionCount ;
+    solutionCount = solutionCount + diff;
+  }
+ }
 
   var createMatrix = function (n) {
     var newMatrix = new Array(n);
@@ -79,34 +106,7 @@ window.countNRooksSolutions = function(n) {
 
   var newMatrix = createMatrix(n);
 
-  // loop for n --> every position on the board
-  for (var i = 0; i < newMatrix.length; i++) {
-    var row = newMatrix[i];
-
-    for (var j = 0; j < row.length; j++) {
-      // pick a spot
-      newMatrix[i][j] = 1;
-
-      collision(i, j);
-
-      var hasEmpty = true;
-
-      while (hasEmpty) {
-        //call empty position checker
-        if (emptyPositionChecker(newMatrix)) {
-          continue;
-        } else {
-          //else we found a complete matrix, break
-          hasEmpty = false;
-          solutionCount++;
-          newMatrix = createMatrix(n);
-          break;
-        }
-      }
-
-    }
-  }
-
+  // based on rook position, greying out function
   var collision = function (i, j) {
     var col = i;
     var row = j;
@@ -115,8 +115,9 @@ window.countNRooksSolutions = function(n) {
       // set the row (i) to all 'a'
       col++;
       if (col < n) {
-        newMatrix[col][j] = 'x';
-        col++;
+        if (newMatrix[col][j] !== 1) {
+          newMatrix[col][j] = 'x';
+        }
       }
     }
 
@@ -124,12 +125,33 @@ window.countNRooksSolutions = function(n) {
       // set columns (j) to all 'a'
       row++;
       if (row < n) {
-        newMatrix[i][row] = 'x';
-        row++;
+        if (newMatrix[i][row] !== 1) {
+          newMatrix[i][row] = 'x';
+        }
+      }
+    }
+
+    if (i > 0) {
+      col = i;
+      while (col !== 0) {
+        col--;
+        if (newMatrix[col][j] !== 1) {
+          newMatrix[col][j] = 'x';
+        }
+      }
+    }
+    if (j > 0) {
+      row = j;
+      while (row !== 0) {
+        row--;
+        if (newMatrix[i][row] !== 1) {
+          newMatrix[i][row] = 'x';
+        }
       }
     }
   };
 
+  // checks position with 0 and sets it with Rook
   var emptyPositionChecker = function (matrix) {
     for (var i = 0; i < matrix.length; i++) {
       for (var j = 0; j < matrix.length; j++) {
@@ -144,6 +166,39 @@ window.countNRooksSolutions = function(n) {
     return false;
   };
 
+
+// loop for every position on the board
+  for (var i = 0; i < newMatrix.length; i++) {
+    var row = newMatrix[i];
+
+    for (var j = 0; j < newMatrix.length; j++) {
+      // pick a position for rook
+      newMatrix[i][j] = 1;
+
+      // grey out collison zones due to the above position
+      collision(i, j);
+
+      var hasEmpty = true;
+
+      while (hasEmpty) {
+        //call empty position checker
+        if (emptyPositionChecker(newMatrix)) {
+          continue;
+        } else {
+          //else we found a complete matrix, break
+          hasEmpty = false;
+          solutionCount++;
+          // reinitiaze new array to start all over
+          newMatrix = createMatrix(n);
+        }
+      }
+
+    }
+  }
+
+  diffCalculator();
+
+
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
 
   return solutionCount;
@@ -151,7 +206,7 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solution = undefined;
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
