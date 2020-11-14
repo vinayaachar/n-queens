@@ -126,12 +126,12 @@ window.findNQueensSolution = function(n) {
   }
 
   if ((n % 6 === 2) || (n % 6 === 3)) {
-    for (var i = 0; i < n/2; i++) {
+    for (var i = 0; i < n / 2; i++) {
       if (Math.floor(n / 2) - i * 2 < n) {
         solution[i][(n + Math.floor(n / 2) - i * 2) % n] = true;
       }
       if ((n - i) >= 0) {
-        solution[n - i -1][(n+ Math.floor(n / 2) - 1 + i * 2) % n] = true;
+        solution[n - i - 1][(n + Math.floor(n / 2) - 1 + i * 2) % n] = true;
       }
     }
 
@@ -145,7 +145,7 @@ window.findNQueensSolution = function(n) {
     if ((i + 1) * 2 - 1 < n) {
       solution[i][((i + 1) * 2) - 1] = true;
     }
-    if (i * 2 < n){
+    if (i * 2 < n) {
       solution[i + Math.floor(n / 2)][i * 2] = true;
     }
   }
